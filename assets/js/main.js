@@ -248,8 +248,8 @@ function initBoost() {
             "(prefers-reduced-motion: reduce)",
         ).matches;
 
-        // Random boost intensity: 0.1 - 2.0
-        boost = Number((Math.random() * 8 + 0.1).toFixed(2));
+        // Random boost intensity: 0.1 - 8.0
+        boost = Number((Math.random() * 7.9 + 0.1).toFixed(2));
         const boostValue = document.querySelector("#boost-value");
         animateSkills(boost);
 
@@ -290,8 +290,8 @@ function initBoost() {
                     y: 0,
                 },
                 {
-                    scale: 1 + boost * 0.015,
-                    y: -5 * boost,
+                    scale: 1.025,
+                    y: -5,
                     duration: 0.35,
                     stagger: 0.04,
                     yoyo: true,
