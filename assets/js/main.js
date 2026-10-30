@@ -2,11 +2,12 @@
    SKILL//NEXUS
    Interactive skill intelligence
 ========================================= */
+let boost = 0;
 
 const skills = [
     {
         name: "HTML5",
-        value: 90,
+        value: 90 + boost,
         category: "MARKUP ENGINE",
         description: "Structure & semantics",
         level: "ADVANCED",
@@ -117,13 +118,12 @@ function calculateTotal() {
    ANIMATE SKILL RINGS
 ========================================= */
 
-function animateSkills() {
+function animateSkills(boost = 0) {
     const cards = document.querySelectorAll(".skill-card");
 
     cards.forEach((card, index) => {
         const ring = card.querySelector(".skill-ring");
         const valueElement = card.querySelector(".ring-value");
-
         const value = Number(ring.dataset.value);
 
         const progress = { value: 0 };
@@ -131,27 +131,23 @@ function animateSkills() {
 
         const delay = 0.25 + index * 0.12;
 
-        // Animate circular progress
         gsap.to(progress, {
             value,
             duration: 1.8,
             delay,
             ease: "power3.out",
-
             onUpdate: () => {
                 ring.style.setProperty("--progress", `${progress.value}%`);
             },
         });
 
-        // Animate percentage number
         gsap.to(counter, {
             value,
             duration: 1.8,
             delay,
             ease: "power3.out",
-
             onUpdate: () => {
-                valueElement.textContent = Math.round(counter.value);
+                valueElement.textContent = Math.round(counter.value + boost);
             },
         });
     });
@@ -231,6 +227,119 @@ function initAmbient() {
 }
 
 /* =========================================
+   NEXUS BOOST / OVERDRIVE
+========================================= */
+
+function initBoost() {
+    const button = document.querySelector("#boost-button");
+    const flash = document.querySelector(".boost-flash");
+
+    let isBoosting = false;
+
+    button.addEventListener("click", () => {
+        if (isBoosting) return;
+
+        isBoosting = true;
+
+        const cards = document.querySelectorAll(".skill-card");
+        const tracks = document.querySelectorAll(".stream-track");
+
+        const reducedMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+        ).matches;
+
+        // Random boost intensity: 0.1 - 2.0
+        boost = Number((Math.random() * 8 + 0.1).toFixed(2));
+        const boostValue = document.querySelector("#boost-value");
+        animateSkills(boost);
+
+        gsap.to(boostValue, {
+            innerText: boost,
+            duration: 0.5,
+            snap: { innerText: 0.01 },
+            ease: "power2.out",
+            onUpdate: function () {
+                boostValue.textContent = `${Number(boostValue.textContent.replace("×", "")).toFixed(2)}×`;
+            },
+        });
+
+        // Activate overdrive
+        document.body.classList.add("overdrive");
+
+        button.querySelector(".boost-title").textContent = "ACTIVE";
+
+        // Background energy burst
+        if (!reducedMotion) {
+            gsap.timeline()
+                .to(flash, {
+                    opacity: 1,
+                    duration: 0.25,
+                })
+                .to(flash, {
+                    opacity: 0,
+                    duration: 0.9,
+                });
+        }
+
+        // Accelerate skill modules
+        if (!reducedMotion) {
+            gsap.fromTo(
+                cards,
+                {
+                    scale: 1,
+                    y: 0,
+                },
+                {
+                    scale: 1 + boost * 0.015,
+                    y: -5 * boost,
+                    duration: 0.35,
+                    stagger: 0.04,
+                    yoyo: true,
+                    repeat: 1,
+                    ease: "power2.inOut",
+                },
+            );
+
+            // Accelerate learning signals
+            tracks.forEach((track) => {
+                track.style.setProperty(
+                    "--stream-speed",
+                    `${Math.max(8, 38 / (1 + boost * 3))}s`,
+                );
+            });
+        }
+
+        // Return to normal after 5 seconds
+        gsap.delayedCall(5, () => {
+            boost = 0;
+
+            gsap.to(boostValue, {
+                innerText: 0,
+                duration: 0.5,
+                snap: { innerText: 0.01 },
+                onUpdate: function () {
+                    boostValue.textContent = `${Number(boostValue.textContent.replace("×", "")).toFixed(2)}×`;
+                },
+            });
+
+            document.body.classList.remove("overdrive");
+            animateSkills();
+
+            button.querySelector(".boost-title").textContent = "BOOST";
+
+            tracks.forEach((track, index) => {
+                track.style.setProperty(
+                    "--stream-speed",
+                    index === 0 ? "38s" : "48s",
+                );
+            });
+
+            isBoosting = false;
+        });
+    });
+}
+
+/* =========================================
    INITIALIZATION
 ========================================= */
 
@@ -247,6 +356,8 @@ function init() {
     // Interactive effects
     initCardInteractions();
     initAmbient();
+
+    initBoost();
 }
 
 window.addEventListener("DOMContentLoaded", init);

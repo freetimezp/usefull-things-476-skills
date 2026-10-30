@@ -27,7 +27,8 @@ body {
     background: var(--bg);
     color: var(--white);
     font-family: var(--font-main);
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 a {
@@ -71,6 +72,240 @@ a {
     bottom: -300px;
     left: -200px;
     background: #9bff00;
+}
+
+/* =========================================
+   LEARNING SIGNALS
+========================================= */
+
+.learning-stream {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 75px;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+
+    display: flex;
+    justify-content: center;
+
+    opacity: 0.45;
+
+    mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        black 15%,
+        black 80%,
+        transparent
+    );
+}
+
+.learning-stream-left {
+    left: 8px;
+}
+
+.learning-stream-right {
+    right: 8px;
+}
+
+.stream-track {
+    --stream-speed: 38s;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 55px;
+    padding-top: 20px;
+
+    animation: streamUp var(--stream-speed) linear infinite;
+}
+
+.learning-stream-right .stream-track {
+    --stream-speed: 48s;
+
+    animation-duration: 48s;
+    animation-direction: reverse;
+}
+
+.stream-track span {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    white-space: nowrap;
+
+    color: var(--muted);
+
+    transition: color 0.3s;
+}
+
+.stream-track span:nth-child(3n) {
+    color: var(--lime);
+    opacity: 0.8;
+}
+
+@keyframes streamUp {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-50%);
+    }
+}
+
+/* =========================================
+   NEXUS BOOST BUTTON
+========================================= */
+
+.boost-button {
+    position: fixed;
+    right: 100px;
+    bottom: 175px;
+    z-index: 20;
+
+    width: 145px;
+    height: 65px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 0 17px;
+
+    color: var(--bg);
+    background: var(--lime);
+
+    border: none;
+    border-radius: 4px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.boost-button:hover {
+    transform: translateY(-5px);
+    box-shadow:
+        0 0 20px rgba(197, 255, 69, 0.25),
+        0 10px 40px rgba(197, 255, 69, 0.15);
+}
+
+.boost-button:active {
+    transform: scale(0.96);
+}
+
+.boost-icon {
+    font-size: 25px;
+    font-weight: 700;
+    transition: transform 0.4s;
+}
+
+.boost-button:hover .boost-icon {
+    transform: translate(3px, -3px);
+}
+
+.boost-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+}
+
+.boost-label {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 2px;
+}
+
+.boost-title {
+    font-family: var(--font-main);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.boost-indicator {
+    position: absolute;
+    top: 9px;
+    right: 10px;
+
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+
+    background: var(--bg);
+}
+
+.boost-value {
+    position: absolute;
+    top: -22px;
+    right: 0;
+
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+
+    color: var(--muted);
+    letter-spacing: 1px;
+
+    transition: color 0.3s;
+}
+
+body.overdrive .boost-value {
+    color: var(--lime);
+}
+
+/* =========================================
+   BOOST FLASH
+========================================= */
+
+.boost-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+
+    pointer-events: none;
+    opacity: 0;
+
+    background: radial-gradient(
+        circle at 90% 90%,
+        rgba(197, 255, 69, 0.2),
+        transparent 45%
+    );
+}
+
+/* =========================================
+   OVERDRIVE STATE
+========================================= */
+
+body.overdrive .skill-card {
+    border-color: rgba(197, 255, 69, 0.6);
+
+    box-shadow:
+        inset 0 0 30px rgba(197, 255, 69, 0.04),
+        0 0 25px rgba(197, 255, 69, 0.05);
+}
+
+body.overdrive .ambient {
+    opacity: 0.16;
+}
+
+body.overdrive .learning-stream {
+    opacity: 0.9;
+}
+
+body.overdrive .boost-button {
+    background: var(--white);
+}
+
+body.overdrive .boost-icon {
+    transform: rotate(45deg);
 }
 
 /* DASHBOARD */
@@ -360,6 +595,11 @@ a {
 }
 
 /* RESPONSIVE */
+@media (max-width: 1200px) {
+    .learning-stream {
+        opacity: 0.2;
+    }
+}
 
 @media (max-width: 1000px) {
     .dashboard {
@@ -374,6 +614,21 @@ a {
 @media (max-width: 650px) {
     .dashboard {
         padding: 0 20px;
+    }
+
+    .learning-stream {
+        display: none;
+    }
+
+    .boost-button {
+        right: 20px;
+        bottom: 20px;
+        width: 125px;
+        height: 55px;
+    }
+
+    .skills-section {
+        padding-bottom: 100px;
     }
 
     .skills-section {
@@ -410,7 +665,7 @@ a {
     }
 
     .footer-copy {
-        font-size: 8px;
+        display: none;
     }
 }
 
@@ -422,5 +677,9 @@ a {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
+    }
+
+    .stream-track {
+        animation: none;
     }
 }
